@@ -25,14 +25,14 @@ interface ItemDao {
     fun searchItems(query: String): Flow<List<ItemEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertItem(item: ItemEntity): Long
+    fun insertItem(item: ItemEntity): Long
 
     @Update
-    suspend fun updateItem(item: ItemEntity)
+    fun updateItem(item: ItemEntity): Int
 
     @Delete
-    suspend fun deleteItem(item: ItemEntity)
+    fun deleteItem(item: ItemEntity): Int
 
     @Query("UPDATE items SET recovered = 1 WHERE id = :id")
-    suspend fun markAsRecovered(id: Int)
+    fun markAsRecovered(id: Int)
 }

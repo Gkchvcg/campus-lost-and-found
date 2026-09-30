@@ -4,6 +4,8 @@ import com.example.campuslostfound.data.local.dao.ItemDao
 import com.example.campuslostfound.data.local.entity.ItemEntity
 import com.example.campuslostfound.domain.repository.ItemRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 class ItemRepositoryImpl @Inject constructor(
@@ -26,19 +28,25 @@ class ItemRepositoryImpl @Inject constructor(
         return dao.searchItems(query)
     }
 
-    override suspend fun insertItem(item: ItemEntity): Long {
-        return dao.insertItem(item)
+    override suspend fun insertItem(item: ItemEntity): Long = withContext(Dispatchers.IO) {
+        dao.insertItem(item)
     }
 
     override suspend fun updateItem(item: ItemEntity) {
-        dao.updateItem(item)
+        withContext(Dispatchers.IO) {
+            dao.updateItem(item)
+        }
     }
 
     override suspend fun deleteItem(item: ItemEntity) {
-        dao.deleteItem(item)
+        withContext(Dispatchers.IO) {
+            dao.deleteItem(item)
+        }
     }
 
     override suspend fun markAsRecovered(id: Int) {
-        dao.markAsRecovered(id)
+        withContext(Dispatchers.IO) {
+            dao.markAsRecovered(id)
+        }
     }
 }

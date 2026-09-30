@@ -10,7 +10,7 @@ import org.junit.Test
 
 class ItemRepositoryImplTest {
 
-    private lateinit class FakeItemDao : ItemDao {
+    private class FakeItemDao : ItemDao {
         val items = mutableListOf<ItemEntity>()
 
         override fun getAllItems() = flowOf(items)
@@ -18,24 +18,30 @@ class ItemRepositoryImplTest {
         override fun getItemsByType(type: String) = flowOf(items.filter { it.type == type })
         override fun searchItems(query: String) = flowOf(items.filter { it.title.contains(query) })
         
-        override suspend fun insertItem(item: ItemEntity): Long {
+        override fun insertItem(item: ItemEntity): Long {
             val itemWithId = if (item.id == 0) item.copy(id = items.size + 1) else item
             items.add(itemWithId)
             return itemWithId.id.toLong()
         }
 
-        override suspend fun updateItem(item: ItemEntity) {
+        override fun updateItem(item: ItemEntity): Int {
             val idx = items.indexOfFirst { it.id == item.id }
-            if (idx >= 0) items[idx] = item
+            if (idx >= 0) {
+                items[idx] = item
+                return 1
+            }
+            return 0
         }
 
-        override suspend fun deleteItem(item: ItemEntity) {
-            items.removeIf { it.id == item.id }
+        override fun deleteItem(item: ItemEntity): Int {
+            return if (items.removeIf { it.id == item.id }) 1 else 0
         }
 
-        override suspend fun markAsRecovered(id: Int) {
+        override fun markAsRecovered(id: Int) {
             val idx = items.indexOfFirst { it.id == id }
-            if (idx >= 0) items[idx] = items[idx].copy(recovered = true)
+            if (idx >= 0) {
+                items[idx] = items[idx].copy(recovered = true)
+            }
         }
     }
 
